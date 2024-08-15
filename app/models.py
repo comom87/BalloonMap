@@ -13,7 +13,7 @@ class CCTV(Base):
     id = Column(Integer, primary_key=True)
     latitude = Column(Double, nullable=False)
     longitude = Column(Double, nullable=False)
-    address = Column(String(255), nullable=False)
+
     cctv_balloon = relationship("CCTVBalloon", backref="cctv_balloons")
 
 
@@ -36,7 +36,6 @@ class ReportedBalloon(Base):
     id = Column(String(36), primary_key=True)
     latitude = Column(Double, nullable=False)
     longitude = Column(Double, nullable=False)
-    address = Column(String(255), nullable=False)
     detection_image = Column(String(255), nullable=False)
     processing_image = Column(String(255), nullable=True)
     detection_time = Column(DateTime, nullable=False)

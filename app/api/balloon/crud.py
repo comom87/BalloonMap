@@ -1,12 +1,13 @@
 import ssl
 import uuid
 
+import boto3
 import certifi
 from fastapi import UploadFile, Form
 from geopy import Nominatim, geocoders
 from sqlalchemy.orm import Session
 
-from app.api.balloon.schema import BalloonRequest, BalloonResponse
+from app.api.balloon.schema import BalloonRequest, BalloonResponse, BalloonsResponse
 from app.models import CCTVBalloon, CCTV, ReportedBalloon
 from app.utils import UvicornException
 
@@ -16,7 +17,6 @@ def read_balloons(db: Session):
         CCTVBalloon.id,
         CCTV.latitude,
         CCTV.longitude,
-        CCTV.address,
         CCTVBalloon.detection_image,
         CCTVBalloon.detection_time,
         CCTVBalloon.processing_image,
@@ -34,18 +34,20 @@ def read_balloons(db: Session):
 
     balloons = cctv_balloons + reported_balloons
 
-    data = [BalloonResponse(
-        id=balloon.id,
-        latitude=balloon.latitude,
-        longitude=balloon.longitude,
-        address=balloon.address,
-        detection_image=balloon.detection_image,
-        detection_time=balloon.detection_time,
-        processing_image=balloon.processing_image,
-        processing_time=balloon.processing_time,
-        processing_state=balloon.processing_state.value,
-        description=balloon.description
-    ) for balloon in balloons]
+    data = BalloonsResponse(
+        balloons=[BalloonResponse(
+            id=balloon.id,
+            latitude=balloon.latitude,
+            longitude=balloon.longitude,
+            detection_image=balloon.detection_image,
+            detection_time=balloon.detection_time,
+            processing_image=balloon.processing_image,
+            processing_time=balloon.processing_time,
+            processing_state=balloon.processing_state.value,
+            description=balloon.description
+        ) for balloon in balloons],
+        count=len(balloons)
+    )
 
     return data
 
@@ -55,7 +57,6 @@ def read_balloon(id: str, db: Session):
         CCTVBalloon.id,
         CCTV.latitude,
         CCTV.longitude,
-        CCTV.address,
         CCTVBalloon.detection_image,
         CCTVBalloon.detection_time,
         CCTVBalloon.processing_image,
@@ -76,7 +77,6 @@ def read_balloon(id: str, db: Session):
         id=balloon.id,
         latitude=balloon.latitude,
         longitude=balloon.longitude,
-        address=balloon.address,
         detection_image=balloon.detection_image,
         detection_time=balloon.detection_time,
         processing_image=balloon.processing_image,
@@ -89,19 +89,16 @@ def read_balloon(id: str, db: Session):
 
 
 def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile, db: Session):
-    context = ssl.create_default_context(cafile=certifi.where())
-    geocoders.options.default_ssl_context = context
-
-    geolocator = Nominatim(user_agent="BalloonMap")
-    location = geolocator.geocode(request.address)
-
-    print(detection_image.filename)
+    # context = ssl.create_default_context(cafile=certifi.where())
+    # geocoders.options.default_ssl_context = context
+    #
+    # geolocator = Nominatim(user_agent="BalloonMap")
+    # location = geolocator.geocode(request.address)
 
     new_reported_balloon = ReportedBalloon(
         id=uuid.uuid4(),
-        latitude=location.latitude,
-        longitude=location.longitude,
-        address=request.address,
+        latitude=request.longitude,
+        longitude=request.longitude,
         detection_image="detection_image",
         detection_time=request.detection_time
     )
