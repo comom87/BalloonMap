@@ -27,14 +27,13 @@ def read_balloons(db: Session):
         CCTVBalloon.description
     ).join(CCTV, CCTVBalloon.cctv_id == CCTV.id
            ).all()
-    if not cctv_balloons:
-        raise UvicornException(status_code=400, message="풍선이 존재하지 않습니다.")
 
     reported_balloons = db.query(ReportedBalloon).all()
-    if not reported_balloons:
-        raise UvicornException(status_code=400, message="풍선이 존재하지 않습니다.")
 
     balloons = cctv_balloons + reported_balloons
+
+    if not balloons:
+        raise UvicornException(status_code=400, message="풍선이 존재하지 않습니다.")
 
     data = BalloonsResponse(
         balloons=[BalloonResponse(
