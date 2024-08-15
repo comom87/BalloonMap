@@ -5,8 +5,10 @@ import boto3
 import certifi
 from fastapi import UploadFile, Form
 from geopy import Nominatim, geocoders
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+from app import s3config
 from app.api.balloon.schema import BalloonRequest, BalloonResponse, BalloonsResponse
 from app.models import CCTVBalloon, CCTV, ReportedBalloon
 from app.utils import UvicornException
@@ -88,6 +90,32 @@ def read_balloon(id: str, db: Session):
     return data
 
 
+def create_cctv_balloon(request: BalloonRequest, detection_image: UploadFile, db: Session):
+    cctv = db.query(CCTV).filter(and_(CCTV.latitude == request.latitude, CCTV.longitude == request.longitude)).first()
+
+    if not cctv:
+        cctv = CCTV(
+            latitude=request.latitude,
+            longitude=request.longitude
+        )
+
+        db.add(cctv)
+        db.commit()
+
+    detection_image_url = s3config.upload_file(detection_image)
+
+    new_cctv_balloon = CCTVBalloon(
+        id=uuid.uuid4(),
+        cctv=cctv,
+        detection_image=detection_image_url,
+        detection_time=request.detection_time
+    )
+
+    db.add(new_cctv_balloon)
+    db.commit()
+
+
+
 def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile, db: Session):
     # context = ssl.create_default_context(cafile=certifi.where())
     # geocoders.options.default_ssl_context = context
@@ -95,11 +123,13 @@ def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile
     # geolocator = Nominatim(user_agent="BalloonMap")
     # location = geolocator.geocode(request.address)
 
+    detection_image_url = s3config.upload_file(detection_image)
+
     new_reported_balloon = ReportedBalloon(
         id=uuid.uuid4(),
         latitude=request.longitude,
         longitude=request.longitude,
-        detection_image="detection_image",
+        detection_image=detection_image_url,
         detection_time=request.detection_time
     )
 

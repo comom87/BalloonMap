@@ -14,7 +14,7 @@ class CCTV(Base):
     latitude = Column(Double, nullable=False)
     longitude = Column(Double, nullable=False)
 
-    cctv_balloon = relationship("CCTVBalloon", backref="cctv_balloons")
+    cctv_balloon = relationship("CCTVBalloon", back_populates="cctv")
 
 
 class CCTVBalloon(Base):
@@ -28,6 +28,8 @@ class CCTVBalloon(Base):
     processing_time = Column(DateTime, nullable=True)
     processing_state = Column(Enum(ProcessingState), nullable=False, default=ProcessingState.PENDING)
     description = Column(Text, nullable=True)
+
+    cctv = relationship("CCTV", back_populates="cctv_balloon")
 
 
 class ReportedBalloon(Base):

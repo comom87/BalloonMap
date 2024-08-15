@@ -21,7 +21,15 @@ def get_balloon(id: str, db: Session = Depends(get_db)):
     return Response(success=True, data=balloon, error=None)
 
 
-@router.post("/", response_model=Response)
-def post_reported_balloon(request: BalloonRequest = Depends(BalloonRequest.as_form), detection_image: UploadFile = File(...), db: Session = Depends(get_db)):
+@router.post("/cctv-balloons", response_model=Response)
+def post_reported_balloon(request: BalloonRequest = Depends(BalloonRequest.as_form),
+                          detection_image: UploadFile = File(...), db: Session = Depends(get_db)):
+    crud.create_cctv_balloon(request, detection_image, db)
+    return Response(success=True, data=None, error=None)
+
+
+@router.post("/reported-balloons", response_model=Response)
+def post_reported_balloon(request: BalloonRequest = Depends(BalloonRequest.as_form),
+                          detection_image: UploadFile = File(...), db: Session = Depends(get_db)):
     crud.create_reported_balloon(request, detection_image, db)
     return Response(success=True, data=None, error=None)
