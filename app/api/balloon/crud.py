@@ -123,7 +123,7 @@ def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile
 
     new_reported_balloon = ReportedBalloon(
         id=uuid.uuid4(),
-        latitude=request.longitude,
+        latitude=request.latitude,
         longitude=request.longitude,
         detection_image=detection_image_url,
         detection_time=request.detection_time
