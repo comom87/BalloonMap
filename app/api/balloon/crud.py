@@ -32,9 +32,6 @@ def read_balloons(db: Session):
 
     balloons = cctv_balloons + reported_balloons
 
-    if not balloons:
-        raise UvicornException(status_code=400, message="풍선이 존재하지 않습니다.")
-
     data = BalloonsResponse(
         balloons=[BalloonResponse(
             id=balloon.id,
