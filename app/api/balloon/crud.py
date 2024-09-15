@@ -9,7 +9,8 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app import s3config
-from app.api.balloon.schema import BalloonRequest, BalloonResponse, BalloonsResponse, NotificationRegistrationTokenRequest
+from app.api.balloon.schema import BalloonRequest, BalloonResponse, BalloonsResponse, \
+    NotificationRegistrationTokenRequest
 from app.fcm import initialize_fcm, send_notification
 from app.models import CCTVBalloon, CCTV, ReportedBalloon
 from app.utils import UvicornException
@@ -138,6 +139,7 @@ def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile
 def create_notification_registration_token(request: NotificationRegistrationTokenRequest):
     global registration_token
     registration_token = request.registration_token
+
 
 def read_notification():
     global registration_token

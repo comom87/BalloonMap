@@ -7,7 +7,8 @@ def initialize_fcm():
         "/Users/kanghyojeong/Project/BalloonMap/balloon-map-net-firebase-adminsdk-5bxnq-58a37d54d4.json")
     firebase_admin.initialize_app(cred)
 
-def send_notification(registration_token: str):
+
+def send_notification(registration_token):
     message = messaging.Message(
         notification={
             "title": "BalloonMap",
