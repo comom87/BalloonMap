@@ -15,6 +15,10 @@ class BalloonRequest(BaseModel):
         return cls(latitude=latitude, longitude=longitude, detection_time=detection_time)
 
 
+class NotificationRegistrationTokenRequest(BaseModel):
+    registration_token: str
+
+
 class BalloonResponse(BaseModel):
     id: UUID
     latitude: float

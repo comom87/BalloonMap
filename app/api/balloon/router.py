@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, File, UploadFile, Form, Body
 from sqlalchemy.orm import Session
 
 from app.api.balloon import crud
-from app.api.balloon.schema import BalloonRequest
+from app.api.balloon.crud import read_notification
+from app.api.balloon.schema import BalloonRequest, NotificationRegistrationTokenRequest
 from app.database import get_db
 from app.utils import Response
 
@@ -32,4 +33,16 @@ def post_reported_balloon(request: BalloonRequest = Depends(BalloonRequest.as_fo
 def post_reported_balloon(request: BalloonRequest = Depends(BalloonRequest.as_form),
                           detection_image: UploadFile = File(...), db: Session = Depends(get_db)):
     crud.create_reported_balloon(request, detection_image, db)
+    return Response(success=True, data=None, error=None)
+
+
+@router.post("/notifications/token", response_model=Response)
+def post_notification_registration_token(request: NotificationRegistrationTokenRequest):
+    crud.create_notification_registration_token(request)
+    return Response(success=True, data=None, error=None)
+
+
+@router.get("/notifications", response_model=Response)
+def get_notifications():
+    read_notification()
     return Response(success=True, data=None, error=None)

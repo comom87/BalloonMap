@@ -9,9 +9,12 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app import s3config
-from app.api.balloon.schema import BalloonRequest, BalloonResponse, BalloonsResponse
+from app.api.balloon.schema import BalloonRequest, BalloonResponse, BalloonsResponse, NotificationRegistrationTokenRequest
+from app.fcm import initialize_fcm, send_notification
 from app.models import CCTVBalloon, CCTV, ReportedBalloon
 from app.utils import UvicornException
+
+registration_token = None
 
 
 def read_balloons(db: Session):
@@ -111,7 +114,6 @@ def create_cctv_balloon(request: BalloonRequest, detection_image: UploadFile, db
     db.commit()
 
 
-
 def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile, db: Session):
     # context = ssl.create_default_context(cafile=certifi.where())
     # geocoders.options.default_ssl_context = context
@@ -131,3 +133,12 @@ def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile
 
     db.add(new_reported_balloon)
     db.commit()
+
+
+def create_notification_registration_token(request: NotificationRegistrationTokenRequest):
+    global registration_token
+    registration_token = request.registration_token
+
+def read_notification():
+    global registration_token
+    send_notification(registration_token)
