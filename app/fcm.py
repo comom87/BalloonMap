@@ -10,10 +10,10 @@ def initialize_fcm():
 
 def send_notification(registration_token):
     message = messaging.Message(
-        notification={
-            "title": "BalloonMap",
-            "body": "BalloonMap"
-        },
+        notification=messaging.Notification(
+            title="BalloonMap",
+            body="BalloonMap"
+        ),
         token=registration_token
     )
 
