@@ -9,11 +9,11 @@ def initialize_fcm():
 
 
 def send_notification(registration_token):
-    print(registration_token)
+    print(f"send_notification: {registration_token}")
     message = messaging.Message(
         notification=messaging.Notification(
             title="BalloonMap",
-            body="BalloonMap"
+            body="주변 30m 내에서 오물 풍선이 감지되었습니다."
         ),
         token=registration_token
     )
