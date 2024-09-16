@@ -139,8 +139,10 @@ def create_reported_balloon(request: BalloonRequest, detection_image: UploadFile
 def create_notification_registration_token(request: NotificationRegistrationTokenRequest):
     global registration_token
     registration_token = request.registration_token
+    print(registration_token)
 
 
-def read_notification():
+def create_notification():
     global registration_token
+    print(registration_token)
     send_notification(registration_token)

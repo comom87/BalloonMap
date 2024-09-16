@@ -35,13 +35,13 @@ def post_reported_balloon(request: BalloonRequest = Depends(BalloonRequest.as_fo
     return Response(success=True, data=None, error=None)
 
 
-@router.post("/notifications/token", response_model=Response)
-def post_notification_registration_token(request: NotificationRegistrationTokenRequest):
-    crud.create_notification_registration_token(request)
+@router.post("/notifications", response_model=Response)
+def post_notifications():
+    crud.create_notification()
     return Response(success=True, data=None, error=None)
 
 
-@router.get("/notifications", response_model=Response)
-def get_notifications():
-    crud.read_notification()
+@router.post("/notifications/token", response_model=Response)
+def post_notification_registration_token(request: NotificationRegistrationTokenRequest):
+    crud.create_notification_registration_token(request)
     return Response(success=True, data=None, error=None)

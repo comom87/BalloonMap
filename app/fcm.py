@@ -9,6 +9,7 @@ def initialize_fcm():
 
 
 def send_notification(registration_token):
+    print(registration_token)
     message = messaging.Message(
         notification=messaging.Notification(
             title="BalloonMap",
